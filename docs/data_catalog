@@ -1,0 +1,64 @@
+🧑‍🤝‍🧑 Dimension: Gold.dim_customers
+
+Purpose: Contains customer master data enriched with demographics and location.
+Grain: One row per unique customer.
+
+  | Column            | Description                               | Example    |
+| ----------------- | ----------------------------------------- | ---------- |
+| `customer_key`    | Surrogate key (internal DW key for joins) | 1          |
+| `customer_id`     | Business key (CRM ID)                     | 101        |
+| `customer_number` | CRM customer code                         | CUST-A001  |
+| `first_name`      | Customer’s first name                     | John       |
+| `last_name`       | Customer’s last name                      | Smith      |
+| `country`         | Country from ERP location                 | USA        |
+| `maritial_status` | Marital status                            | Married    |
+| `gender`          | Gender (CRM is master, ERP fallback)      | Male       |
+| `birthdate`       | Date of birth                             | 1985-06-22 |
+| `create_date`     | Customer creation date in CRM             | 2018-03-01 |
+
+  👉 Example Use Case: Find all customers from "USA" created in the last 5 years.
+--------------------------------------------------------------------------------------
+  📦 Dimension: Gold.dim_products
+
+Purpose: Stores product master data enriched with categories and costs.
+Grain: One row per unique product.
+
+  | Column           | Description                               | Example           |
+| ---------------- | ----------------------------------------- | ----------------- |
+| `product_key`    | Surrogate key (internal DW key for joins) | 10                |
+| `product_id`     | Business key (CRM product ID)             | 2001              |
+| `product_number` | CRM product code                          | PRD-001           |
+| `product_name`   | Name of product                           | iPhone 14         |
+| `category_id`    | ERP category ID                           | CAT-01            |
+| `category`       | Product category                          | Electronics       |
+| `subcategory`    | Product sub-category                      | Mobile Phones     |
+| `maintenance`    | Maintenance type from ERP                 | Standard Warranty |
+| `cost`           | Product cost                              | 699               |
+| `product_line`   | Product line                              | Mobile Devices    |
+| `start_date`     | Product activation/start date             | 2022-09-01        |
+
+  👉 Example Use Case: Analyze sales by category or subcategory (e.g., "How many phones sold vs laptops?").
+---------------------------------------------------------------------------------------------
+    💰 Fact: Gold.fact_sales
+
+Purpose: Records sales transactions, linked to customers and products.
+Grain: One row per order line item (customer × product × order).
+  
+| Column         | Description                                                | Example    |
+| -------------- | ---------------------------------------------------------- | ---------- |
+| `order_number` | Sales order number                                         | SO-5001    |
+| `product_key`  | Surrogate product key (FK → `dim_products.product_key`)    | 10         |
+| `customer_key` | Surrogate customer key (FK → `dim_customers.customer_key`) | 1          |
+| `order_date`   | Order date                                                 | 2023-02-10 |
+| `ship_date`    | Shipping date                                              | 2023-02-12 |
+| `due_date`     | Due date                                                   | 2023-02-15 |
+| `sales_amount` | Total sales amount for this line                           | 1398       |
+| `quantity`     | Number of units ordered                                    | 2          |
+| `price`        | Unit price                                                 | 699        |
+
+  👉 Example Use Case:
+
+Total sales by country and category: "What is the sales revenue of Electronics in USA for 2023?"
+
+Customer lifetime value: "How much has John Smith purchased in total since joining?"
+----------------------------------------------------------------------------------------------
